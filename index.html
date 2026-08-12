@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background: #00c853;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 40px;
+    color: #1a1a1a;
+}
+
+/* Top green header bar like an app */
+body::before {
+    content: "Airtime Recharge";
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 24px 0;
+    letter-spacing: 0.5px;
+}
+
+/* Main white card holding the form */
+select, input[type="text"], button, h1 {
+    width: 100%;
+    max-width: 320px;
+}
+
+select, input[type="text"] {
+    padding: 13px 14px;
+    margin: 8px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #fff;
+    outline: none;
+    transition: border 0.2s;
+}
+
+select:focus, input[type="text"]:focus {
+    border-color: #00c853;
+    box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.15);
+}
+
+button {
+    padding: 14px;
+    margin: 10px 0 24px;
+    border: none;
+    border-radius:
+</style>
+<body>
+      <select id="userSim">
+        <option value="Airtel">Airtel</option>
+        <option value="MTN">MTN</option>
+        <option value="Glo">Glo</option>
+        <option value="9mobile">9mobile</option>
+    </select>
+    <br>
+    <select id="userPrice">
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+    </select>
+    <h1>PIN: <span id="userDisplayPin"></span></h1>
+    <button onclick="generatePin()">Generate Airtime</button>
+    <h1>Load Airtime</h1>
+    <input type="text" id="inputPin">
+    <button onclick="loadAirtime()">Load Airtime</button>
+    <h1>Balance: <span id="balance">0</span></h1>
+     <table>
+        <thead>
+            <tr>
+                <th>S/N</th>
+                <th>Pin</th>
+                <th>Status</th>
+                <th>Provider</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody id="pinTable">
+        </tbody>
+    </table>
+</body>
+</html>
+<script>
+let rechargePins=[]
+function generatePin() {
+        let rechargePin = Math.floor(100000000000 + Math.random() * 900000000000);
+    console.log(rechargePin);
+  let userSim = document.getElementById("userSim").value;
+let userPrice = document.getElementById("userPrice").value;
+    let userInfo = {
+        pin: rechargePin,
+        status: "Unused",
+        provider: userSim,
+        amount: userPrice
+    };
+      rechargePins.push(userInfo);
+    document.getElementById("userDisplayPin").innerText = rechargePin;
+    console.log(userInfo);
+    displayPins()
+}
+function displayPins() {
+    let display = "";
+    for (let i = 0; i < rechargePins.length; i++) {
+        display += `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${rechargePins[i].pin}</td>
+                <td>${rechargePins[i].status}</td>
+                <td>${rechargePins[i].provider}</td>
+                <td>${rechargePins[i].amount}</td>
+            </tr>
+        `;
+    }
+    document.getElementById("pinTable").innerHTML = display;
+}
+</script>
