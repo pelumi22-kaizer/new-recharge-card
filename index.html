@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <style>
-    * {
+   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -23,7 +23,7 @@ body {
     color: #1a1a1a;
 }
 
-/* Top green header bar like an app */
+
 body::before {
     content: "Airtime Recharge";
     display: block;
@@ -36,7 +36,7 @@ body::before {
     letter-spacing: 0.5px;
 }
 
-/* Main white card holding the form */
+
 select, input[type="text"], button, h1 {
     width: 100%;
     max-width: 320px;
@@ -62,17 +62,95 @@ button {
     padding: 14px;
     margin: 10px 0 24px;
     border: none;
-    border-radius:
+    border-radius: 12px;
+    background: #00c853;
+    color: #fff;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+button:hover {
+    background: #00a844;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+h1 {
+    background: #fff;
+    font-size: 15px;
+    margin: 0 0 4px;
+    text-align: center;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+#userDisplayPin {
+    color: #00a844;
+    font-weight: bold;
+}
+
+#balance {
+    color: #00a844;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+h2 {
+    width: 100%;
+    max-width: 320px;
+    margin: 20px 0 10px;
+    font-size: 15px;
+    color: #fff;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 320px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+    background: #eafff0;
+    color: #00a844;
+}
+
+th, td {
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 13px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+tbody tr:hover {
+    background: #f4fff8;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
 </style>
 <body>
+       <label class="d-block" for="">Select a Provider</label>
       <select id="userSim">
-        <option value="Airtel">Airtel</option>
-        <option value="MTN">MTN</option>
+       <option value="">Select a Provider</option>
+       <option value="MTN">MTN</option>
+     <option value="Airtel">Airtel</option>
         <option value="Glo">Glo</option>
         <option value="9mobile">9mobile</option>
     </select>
     <br>
+      <label class="d-block" for="">Select Price</label>
     <select id="userPrice">
+         <option value="">Select a Price</option>
         <option value="100">100</option>
         <option value="200">200</option>
         <option value="500">500</option>
@@ -81,7 +159,11 @@ button {
     <h1>PIN: <span id="userDisplayPin"></span></h1>
     <button onclick="generatePin()">Generate Airtime</button>
     <h1>Load Airtime</h1>
-    <input type="text" id="inputPin">
+    <div class="pin-input">
+    <span>*311*</span>
+    <input type="text" id="inputPin" placeholder="Enter PIN">
+    <span>#</span>
+</div>
     <button onclick="loadAirtime()">Load Airtime</button>
     <h1>Balance: <span id="balance">0</span></h1>
      <table>
@@ -97,25 +179,34 @@ button {
         <tbody id="pinTable">
         </tbody>
     </table>
+  
 </body>
 </html>
 <script>
-let rechargePins=[]
+let rechargePins= JSON.parse(localStorage.getItem("rechargePins")) ||[]
+ let balance=Number(localStorage.getItem("balance")) ||0
 function generatePin() {
-        let rechargePin = Math.floor(100000000000 + Math.random() * 900000000000);
-    console.log(rechargePin);
   let userSim = document.getElementById("userSim").value;
-let userPrice = document.getElementById("userPrice").value;
+    let userPrice = document.getElementById("userPrice").value;
+    if (!userSim || !userPrice) {
+        alert("All inputs are mandatory");
+        return;
+    }
+    let rechargePin = Math.floor(
+        100000000000 + Math.random() * 900000000000
+    );
+    console.log(rechargePin);
     let userInfo = {
         pin: rechargePin,
         status: "Unused",
         provider: userSim,
         amount: userPrice
     };
-      rechargePins.push(userInfo);
+    rechargePins.push(userInfo);
+    localStorage.setItem("rechargePins", JSON.stringify(rechargePins));
     document.getElementById("userDisplayPin").innerText = rechargePin;
     console.log(userInfo);
-    displayPins()
+    displayPins();
 }
 function displayPins() {
     let display = "";
@@ -132,4 +223,29 @@ function displayPins() {
     }
     document.getElementById("pinTable").innerHTML = display;
 }
+ 
+function loadAirtime() {
+    
+    let loadCard= document.getElementById('inputPin').value
+
+    let foundPin = rechargePins.filter(function(item) {
+        return item.pin === Number(loadCard);
+    });
+    if (foundPin[0].status === "Used") {
+    alert("This PIN has already been used");
+    return;
+}
+    console.log(foundPin);
+    balance += Number(foundPin[0].amount);
+    localStorage.setItem("balance", balance);
+    foundPin[0].status = "Used";
+    localStorage.setItem("rechargePins", JSON.stringify(rechargePins));
+    document.getElementById("balance").innerHTML = balance
+    console.log(balance);
+displayPins()
+document.getElementById("inputPin").value = "";
+}
+displayPins()
+document.getElementById("balance").innerHTML = balance;
+
 </script>
