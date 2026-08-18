@@ -137,6 +137,12 @@ tbody tr:hover {
 tbody tr:last-child td {
     border-bottom: none;
 }
+#successMessage {
+    color: white;
+    font-weight: bold;
+    margin: 5px 0 15px;
+    text-align: center;
+}
 </style>
 <body>
        <label class="d-block" for="">Select a Provider</label>
@@ -158,11 +164,9 @@ tbody tr:last-child td {
     </select>
     <h1>PIN: <span id="userDisplayPin"></span></h1>
     <button onclick="generatePin()">Generate Airtime</button>
-    <h1>Load Airtime</h1>
+    
     <div class="pin-input">
-    <span>*311*</span>
-    <input type="text" id="inputPin" placeholder="Enter PIN">
-    <span>#</span>
+    <input type="text" id="inputPin" placeholder="*311*PIN#">
 </div>
     <button onclick="loadAirtime()">Load Airtime</button>
     <h1>Balance: <span id="balance">0</span></h1>
@@ -179,7 +183,7 @@ tbody tr:last-child td {
         <tbody id="pinTable">
         </tbody>
     </table>
-  
+  <p id="successMessage"></p>
 </body>
 </html>
 <script>
@@ -227,9 +231,17 @@ function displayPins() {
 function loadAirtime() {
     
     let loadCard= document.getElementById('inputPin').value
-
+       if (!loadCard.startsWith("*311*")) {
+        alert("You need to include *311*");
+        return;
+    }
+       if (!loadCard.endsWith("#")) {
+        alert("Your recharge code must end with #");
+        return;
+    }
+       let inputPin = loadCard.slice(5, -1);
     let foundPin = rechargePins.filter(function(item) {
-        return item.pin === Number(loadCard);
+        return item.pin === Number(inputPin);
     });
     if (foundPin[0].status === "Used") {
     alert("This PIN has already been used");
@@ -243,9 +255,12 @@ function loadAirtime() {
     document.getElementById("balance").innerHTML = balance
     console.log(balance);
 displayPins()
+ document.getElementById("successMessage").innerHTML =
+        "You have successfully recharged the card!";
 document.getElementById("inputPin").value = "";
 }
 displayPins()
 document.getElementById("balance").innerHTML = balance;
+
 
 </script>
